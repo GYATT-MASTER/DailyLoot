@@ -15,7 +15,7 @@ namespace DailyLoot
 {
 	public class DailyLoot : Mod
 	{
-        // not needed until i do the UI, will remain for now
+        // not needed until i do the UI, will remain here for now
 
 		public static DailyLoot Instance { get; private set; } = null;
 
@@ -42,7 +42,7 @@ namespace DailyLoot
 
         private bool FirstLogin;
 
-        public Dictionary<int, (int, int)> LootLookupTable = [];
+        public Dictionary<int, (int, int)> LootLookupTable = null;
 
         private static Dictionary<int, (int, int)> InitializeLoot() 
         {
@@ -58,7 +58,7 @@ namespace DailyLoot
                     [3] = (ItemID.Diamond, 5),
                     [4] = GetModdedItems()[1],
                     [5] = (ItemID.PinkGel, 20),
-                    [6] = GetModdedItems()[2],
+                    [6] = GetModdedItems()[2], //
                     [7] = (ItemID.PinkGel, 20),
                     [8] = (ItemID.PinkGel, 20),
                     [9] = (ItemID.PinkGel, 20),
@@ -91,6 +91,23 @@ namespace DailyLoot
             };
         }
 
+        /// <summary>
+        /// Retrieve rewards that change based on some condition here, such as <see cref="Main.hardMode"/>.
+        /// <br>Some of these may be modded drops, and will default to a pair of vanilla items if the mod isnt active.</br>
+        /// </summary>
+        /// <returns></returns>
+        public static (int, int)[] GetConditionalItems()
+        {
+            (int, int)[] loot = new (int, int)[8];
+
+            return loot;
+        }
+
+        /// <summary>
+        /// Retrieve modded items here. 
+        /// <br>Vanilla items are provided as a fallback if the mods are disabled.</br>
+        /// </summary>
+        /// <returns></returns>
         public static (int, int)[] GetModdedItems()
         {
             (int, int)[] loot = new (int, int)[8];
@@ -108,6 +125,8 @@ namespace DailyLoot
                     loot[1] = (seaPrism.Type, 15);
                 }
             }
+
+            //this will have to be changed when support for other mods is added later.. :3
 
             // if the mods were not present, default to vanilla loot.
             else
@@ -134,15 +153,15 @@ namespace DailyLoot
                 FirstLogin = false;
             }
 
-            // set up the drops for each day of the current month. (though all months currently have the same loot)
-            LootLookupTable = InitializeLoot();
-
             // always set this when logging in.
             LastLogin = DateTime.Now.Day;
         }
 
         public override void PostUpdateWorld()
         {
+            // set up all the drops for the current month.
+            LootLookupTable ??= InitializeLoot();
+
             if (LastLogin == SavedLoginTime + 1)
             {
                 SavedLoginTime = LastLogin;
@@ -151,19 +170,21 @@ namespace DailyLoot
 
             if (RewardsClaimable)
             {
-                //spawn an item for the current day!
+                // spawn an item for the current day!
 
                 int drop = LootLookupTable[LastLogin].Item1;
                 int amount = LootLookupTable[LastLogin].Item2;
 
                 int item = Item.NewItem(Item.GetSource_None(), Main.LocalPlayer.getRect(), drop, amount);
 
+                // sync the provided reward to all clients.
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                     NetMessage.SendData(MessageID.SyncItem, -1, -1, null, item, 1f);
 
                 bool isPluralAmount = amount > 1;
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                // only the client should broadcast this.
+                if (Main.netMode != NetmodeID.Server)
                     Main.NewText($"Today's reward{(isPluralAmount ? "s are" : " is")} {(isPluralAmount ? $"{amount}" : "a")} {drop}{(isPluralAmount ? "s" : "")}!".ColorString(Color.LightYellow.LerpTo(Color.Violet, 0.1f)));
 
                 RewardsClaimable = false;
