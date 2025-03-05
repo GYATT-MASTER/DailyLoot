@@ -1,0 +1,19 @@
+[h1] Daily Rewards!!! [/h1]
+
+This mod adds a simple system that grants players rewards every day they log in!
+
+[h2] Info: [/h2] [list]
+
+[*] Currently supports rewarding player with calamity materials, more mods may be added in the future...
+
+[*] On days where you would have gotten a modded item, but the mod isn't enabled, you will get 10 gold coins instead.
+
+[*] Each month has the same rewards for now, but every day is different :)
+
+[*] Completely multiplayer compatible, and can be used with any mods you wish!
+
+[*] Eventually, I will add a UI that makes things a bit more pleasing...
+
+[/list]
+
+[b]Enjoy the mod![/b]

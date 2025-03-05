@@ -1,0 +1,3 @@
+displayName = Daily Rewards
+author = Viktor
+version = 1.0.0.0
