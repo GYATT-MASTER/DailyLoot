@@ -40,7 +40,7 @@ namespace DailyLoot
 
         private bool RewardsClaimable;
 
-        private bool FirstLogin;
+        private bool FirstLogin = true;
 
         public Dictionary<int, (int, int)> LootLookupTable = null;
 
@@ -48,7 +48,7 @@ namespace DailyLoot
         {
             return DateTime.Now.Month switch
             {
-                //for now, all months have the same loot.
+                // for now, all months have the same loot.
 
                 >= 0 and <= 12 => new Dictionary<int, (int, int)>
                 {
@@ -59,7 +59,7 @@ namespace DailyLoot
                     [4] = GetModdedItems()[1],
                     [5] = (ItemID.PinkGel, 20),
                     [6] = GetModdedItems()[2], //
-                    [7] = (ItemID.PinkGel, 20),
+                    [7] = GetConditionalItems()[0],
                     [8] = (ItemID.PinkGel, 20),
                     [9] = (ItemID.PinkGel, 20),
                     [10] = (ItemID.PinkGel, 20),
@@ -92,7 +92,7 @@ namespace DailyLoot
         }
 
         /// <summary>
-        /// Retrieve rewards that change based on some condition here, such as <see cref="Main.hardMode"/>.
+        ///     Retrieve rewards that change based on some condition here, such as <see cref="Main.hardMode"/>.
         /// <br>Some of these may be modded drops, and will default to a pair of vanilla items if the mod isnt active.</br>
         /// </summary>
         /// <returns></returns>
@@ -100,11 +100,16 @@ namespace DailyLoot
         {
             (int, int)[] loot = new (int, int)[8];
 
+            // shorthands are pretty sigma...
+            static (int, int) GetResult(bool condition, (int, int) fail, (int, int) succeed) => condition ? succeed : fail;
+
+            loot[0] = GetResult(Main.hardMode, (ItemID.PlatinumBar, 10), (ItemID.MythrilBar, 5));
+
             return loot;
         }
 
         /// <summary>
-        /// Retrieve modded items here. 
+        ///     Retrieve modded items here. 
         /// <br>Vanilla items are provided as a fallback if the mods are disabled.</br>
         /// </summary>
         /// <returns></returns>
@@ -126,7 +131,7 @@ namespace DailyLoot
                 }
             }
 
-            //this will have to be changed when support for other mods is added later.. :3
+            // this will have to be changed when support for other mods is added later.. :3
 
             // if the mods were not present, default to vanilla loot.
             else
@@ -160,6 +165,7 @@ namespace DailyLoot
         public override void PostUpdateWorld()
         {
             // set up all the drops for the current month.
+            // this is initialized here as some mods may load after this one, so this is here to ensure all attempts to retrieve modded items are as successful as possible.
             LootLookupTable ??= InitializeLoot();
 
             if (LastLogin == SavedLoginTime + 1)
@@ -189,6 +195,8 @@ namespace DailyLoot
 
                 RewardsClaimable = false;
             }
+
+            //Main.NewText($"{LastLogin}, {SavedLoginTime}, {FirstLogin}, {RewardsClaimable}");
         }
 
         // Ensure that values that should be saved...get saved...
