@@ -59,9 +59,9 @@ namespace DailyLoot
                     [4] = GetModdedItems()[1],
                     [5] = GetConditionalItems()[0],
                     [6] = GetModdedItems()[2], //
-                    [7] = GetConditionalItems()[0],
-                    [8] = (ItemID.PinkGel, 20),
-                    [9] = (ItemID.PinkGel, 20),
+                    [7] = GetConditionalItems()[1],
+                    [8] = (ItemID.Obsidian, 30),
+                    [9] = (ItemID.DemoniteBar, 5),
                     [10] = (ItemID.PinkGel, 20),
                     [11] = (ItemID.PinkGel, 20),
                     [12] = (ItemID.PinkGel, 20),
@@ -168,7 +168,13 @@ namespace DailyLoot
             // this is initialized here as some mods may load after this one, so this is here to ensure all attempts to retrieve modded items are as successful as possible.
             LootLookupTable ??= InitializeLoot();
 
-            if (LastLogin == SavedLoginTime + 1)
+            // refreshes the value when a new month starts
+            if (LastLogin == 1 && SavedLoginTime > 0)
+                SavedLoginTime = 0;
+
+            // if you logged in yesterday, and claimed rewards, claim new rewards today.
+            // uses >= in case of the player missing a day, or more.
+            if (LastLogin >= SavedLoginTime + 1)
             {
                 SavedLoginTime = LastLogin;
                 RewardsClaimable = true;
