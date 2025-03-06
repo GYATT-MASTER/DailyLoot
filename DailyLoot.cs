@@ -57,7 +57,7 @@ namespace DailyLoot
                     [2] = GetModdedItems()[0],
                     [3] = (ItemID.Diamond, 5),
                     [4] = GetModdedItems()[1],
-                    [5] = (ItemID.PinkGel, 20),
+                    [5] = GetConditionalItems()[0],
                     [6] = GetModdedItems()[2], //
                     [7] = GetConditionalItems()[0],
                     [8] = (ItemID.PinkGel, 20),
@@ -191,7 +191,7 @@ namespace DailyLoot
 
                 // only the client should broadcast this.
                 if (Main.netMode != NetmodeID.Server)
-                    Main.NewText($"Today's reward{(isPluralAmount ? "s are" : " is")} {(isPluralAmount ? $"{amount}" : "a")} {drop}{(isPluralAmount ? "s" : "")}!".ColorString(Color.LightYellow.LerpTo(Color.Violet, 0.1f)));
+                    Main.NewText($"Today's reward{(isPluralAmount ? "s are" : " is")} {(isPluralAmount ? $"{amount}" : "a")} {ItemID.Search.GetName(drop)}{(isPluralAmount ? "s" : "")}!".ColorString(Color.Cyan.LerpTo(Color.Violet, 0.15f)));
 
                 RewardsClaimable = false;
             }
