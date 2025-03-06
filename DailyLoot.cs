@@ -52,39 +52,45 @@ namespace DailyLoot
 
                 >= 0 and <= 12 => new Dictionary<int, (int, int)>
                 {
-                    [0] = (ItemID.Bunny, 1),
-                    [1] = (ItemID.Wood, 150),
+                    [0] = (ItemID.Bunny, 1), // safeguard
+                    
+                    [1] = (ItemID.Wood, 500), 
                     [2] = GetModdedItems()[0],
                     [3] = (ItemID.Diamond, 5),
                     [4] = GetModdedItems()[1],
-                    [5] = GetConditionalItems()[0],
-                    [6] = GetModdedItems()[2], //
-                    [7] = GetConditionalItems()[1],
+                    [5] = (ItemID.Ruby, 10),
+                    [6] = GetModdedItems()[2], 
+                    [7] = GetConditionalItems()[0],
+
                     [8] = (ItemID.Obsidian, 30),
                     [9] = (ItemID.DemoniteBar, 5),
                     [10] = (ItemID.PinkGel, 20),
                     [11] = (ItemID.PinkGel, 20),
                     [12] = (ItemID.PinkGel, 20),
                     [13] = (ItemID.PinkGel, 20),
-                    [14] = (ItemID.PinkGel, 20),
+                    [14] = GetConditionalItems()[1],
+
                     [15] = (ItemID.PinkGel, 20),
-                    [16] = (ItemID.PinkGel, 20),
+                    [16] = (ItemID.PinkGel, 20),                 
                     [17] = (ItemID.PinkGel, 20),
                     [18] = (ItemID.PinkGel, 20),
                     [19] = (ItemID.PinkGel, 20),
                     [20] = (ItemID.PinkGel, 20),
-                    [21] = (ItemID.PinkGel, 20),
+                    [21] = GetConditionalItems()[2],
+
                     [22] = (ItemID.PinkGel, 20),
                     [23] = (ItemID.PinkGel, 20),
                     [24] = (ItemID.PinkGel, 20),
                     [25] = (ItemID.PinkGel, 20),
                     [26] = (ItemID.PinkGel, 20),
                     [27] = (ItemID.PinkGel, 20),
-                    [28] = (ItemID.PinkGel, 20),
+                    [28] = GetConditionalItems()[3],
+
                     [29] = (ItemID.PinkGel, 20),
                     [30] = (ItemID.PinkGel, 20),
-                    [31] = (ItemID.PinkGel, 20),
-                    [32] = (ItemID.PinkGel, 20),
+                    [31] = GetConditionalItems()[4],
+
+                    [32] = (ItemID.PinkGel, 20), // safeguard
                 },
 
                 _ => []
@@ -98,12 +104,16 @@ namespace DailyLoot
         /// <returns></returns>
         public static (int, int)[] GetConditionalItems()
         {
-            (int, int)[] loot = new (int, int)[8];
+            (int, int)[] loot = new (int, int)[5];
 
             // shorthands are pretty sigma...
             static (int, int) GetResult(bool condition, (int, int) fail, (int, int) succeed) => condition ? succeed : fail;
 
             loot[0] = GetResult(Main.hardMode, (ItemID.PlatinumBar, 10), (ItemID.MythrilBar, 5));
+            loot[1] = GetResult(NPC.downedMechBossAny, GetResult(NPC.downedBoss2, (ItemID.GoldBar, 15), (ItemID.TissueSample, 30)), (ItemID.HallowedBar, 15));
+            loot[2] = GetResult(NPC.downedPlantBoss, GetResult(Main.hardMode, (ItemID.GoldBar, 15), (ItemID.TissueSample, 30)), (ItemID.MythrilBar, 5));
+            loot[3] = GetResult(Main.hardMode, (ItemID.PlatinumBar, 10), (ItemID.MythrilBar, 5));
+            loot[4] = GetResult(Main.hardMode, (ItemID.PlatinumBar, 10), (ItemID.MythrilBar, 5));
 
             return loot;
         }
